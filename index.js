@@ -30,34 +30,34 @@ async function run() {
     const db=client.db('SRevent');
     const collections=db.collection('events');
 
-    app.get('/movies', async(req,res)=>{
+    app.get('/events', async(req,res)=>{
             const cursor=collections.find();
             const result=await cursor.toArray();
             res.send(result);
         });
 
-        app.post('/movies', async(req,res)=>{
+        app.post('/events', async(req,res)=>{
             const newMovie=req.body;
             const result= await collections.insertOne(newMovie);
             res.send(result);
         });
 
-        app.patch('/movies/:id', async(req,res)=>{
+        app.patch('/events/:id', async(req,res)=>{
             const id=req.params.id;
-            const updatedproduct=req.body;
+            const updatedevent=req.body;
             const query={_id: new ObjectId(id)};
             const update={
                 $set:{
-                    MovieName:updatedproduct.MovieName,
-                    Genre:updatedproduct.Genre,
-                    RentPrice:updatedproduct.RentPrice
+                    EventName:updatedevent.EventName,
+                    Genre:updatedevent.Genre,
+                    Price:updatedevent.Price
                 }
             }
             const result=await collections.updateOne(query,update);
             res.send(result)
         })
 
-        app.delete('/movies/:id', async(req,res)=>{
+        app.delete('/events/:id', async(req,res)=>{
             const id=req.params.id;
             const query={_id: new ObjectId(id)};
             const result=await collections.deleteOne(query);
