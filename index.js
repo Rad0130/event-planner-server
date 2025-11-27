@@ -37,7 +37,7 @@ app.use(cors({
     
     // Allow specific production domains (you can add these later)
     const productionDomains = [
-      'https://event-planner.vercel.app', // You'll replace this after deployment
+      'https://your-app-name.vercel.app', // You'll replace this after deployment
     ];
     
     if (productionDomains.some(domain => origin === domain)) {
