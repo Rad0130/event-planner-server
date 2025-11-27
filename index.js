@@ -6,23 +6,46 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS configuration for production
+// More flexible CORS configuration for deployment
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://your-domain.com',
-  'https://www.your-domain.com'
+  // We'll add the production domains dynamically
 ];
+
+// Check if in production and allow common Vercel patterns
+const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    // Allow all subdomains of vercel.app in production
+    if (isProduction && origin.endsWith('.vercel.app')) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    
+    // Allow localhost in development
+    if (!isProduction && origin.startsWith('http://localhost:')) {
+      return callback(null, true);
+    }
+    
+    // Check against our allowed origins
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    
+    // Allow specific production domains (you can add these later)
+    const productionDomains = [
+      'https://your-app-name.vercel.app', // You'll replace this after deployment
+    ];
+    
+    if (productionDomains.some(domain => origin === domain)) {
+      return callback(null, true);
+    }
+    
+    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+    return callback(new Error(msg), false);
   },
   credentials: true
 }));
